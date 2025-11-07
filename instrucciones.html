@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Instrucciones</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 2em auto;
+    padding: 1em;
+    background: #fff;
+    color: #222;
+  }
+  h1 {
+    color: #f2711c;
+  }
+  
+  
+  body {
+  font-family: Arial, sans-serif;
+  margin: 0; padding: 0;
+  background: #f9f9f9;
+  color: #222;
+}
+
+h1, h2, h3 {
+  margin: 0.5em 0;
+}
+
+button {
+  cursor: pointer;
+  padding: 0.5em 1em;
+  border: none;
+  background: #0044cc;
+  color: white;
+  border-radius: 4px;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #0033aa;
+}
+
+input, select {
+  width: 80%;
+  padding: 0.6em;
+  margin: 0.3em 0 1em 1;
+  border: 4px solid #ccc;
+  border-radius: 15px;
+}
+
+.card {
+  background: white;
+  margin: 1em auto;
+  padding: 1em;
+  border-radius: 8px;
+  max-width: 900px;
+  box-shadow: 0 0 10px #ccc;
+}
+
+.scroll-horizontal {
+  display: flex;
+  overflow-x: auto;
+  padding-bottom: 1em;
+}
+
+.producto-item {
+  min-width: 350px;
+  border: 1px solid #ddd;
+  margin-right: 1em;
+  padding: 1em;
+  border-radius: 8px;
+  background: #fafafa;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.producto-item h4 {
+  margin: 0 0 0.3em 0;
+}
+
+.producto-item small {
+  font-size: 0.8em;
+  color: #555;
+}
+
+.actions {
+  margin-top: 1em;
+  display: flex;
+  justify-content: space-between;
+}
+
+.actions button {
+  font-size: 0.9em;
+  padding: 0.3em 0.6em;
+  background: #007700;
+  border-radius: 4px;
+}
+
+.actions button.editar {
+  background: #0077bb;
+}
+
+.actions button.eliminar {
+  background: #cc0000;
+}
+
+.actions button.vender {
+  background: #ffaa00;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Modal */
+
+.modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 1.5em;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 90%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1em;
+}
+
+.factura-content pre {
+  white-space: pre-wrap;
+  background: #eee;
+  padding: 1em;
+  border-radius: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Login */
+.login-container {
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(45deg, #ff6600, #ffcc00);
+}
+
+.login-box {
+  background: white;
+  padding: 2em;
+  border-radius: 12px;
+  box-shadow: 0 0 15px #aa6600;
+  max-width: 320px;
+  width: 90%;
+  text-align: center;
+}
+
+.login-box input {
+  margin-bottom: 1em;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.prueba-banner {
+  margin-top: 1em;
+  padding: 0.5em;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.prueba-banner.verde {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.prueba-banner.rojo {
+  background-color: #F44336;
+  color: white;
+}
+
+header {
+  background: #f2711c;
+  color: white;
+  padding: 1em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  font-weight: 700;
+}
+
+header button {
+  background: white;
+  color: #f2711c;
+  font-weight: 700;
+  border-radius: 4px;
+  margin-left: 0.5em;
+  padding: 0.3em 0.6em;
+}
+
+header button:hover {
+  background: #f5f5f5;
+}
+
+#instrucciones-btn {
+  background: white;
+  color: #f2711c;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+#instrucciones-btn:hover {
+  background: #f5f5f5;
+}
+
+    /* Estilo del botón flotante */
+        .btn-flotante {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #007BFF; /* Azul bootstrap */
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 8px 15px rgba(0, 123, 255, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Efecto hover */
+        .btn-flotante:hover {
+            background-color: #0056b3;
+            box-shadow: 0 15px 25px rgba(0, 86, 179, 0.5);
+            transform: translateY(-5px) scale(1.05);
+        }
+
+        /* Icono animado (flecha) */
+        .btn-flotante svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-flotante:hover svg {
+            transform: translateX(-5px);
+        }
+
+        /* Animación de entrada del botón */
+        @keyframes slideInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(100px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .btn-flotante {
+            animation: slideInUp 0.6s ease forwards;
+        }
+  
+  
+  
+  
+    /* styles.css */
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #001f3f; /* azul oscuro */
+  color: white;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  max-width: 900px;
+  margin: 20px auto;
+  background: white;
+  color: black;
+  border: 3px solid orange;
+  border-radius: 10px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+h1, h2, h3 {
+  color: #007bff;
+}
+
+footer {
+  background-color: #001f3f;
+  text-align: center;
+  padding: 10px;
+  font-size: 0.9em;
+  color: white;
+  margin-top: auto;
+  border-top: 1px solid #004080;
+}
+
+/* Splash screen styles */
+#splash {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #001f3f;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  color: white;
+  font-weight: bold;
+  font-family: 'Segoe UI Black', sans-serif;
+}
+
+#splash .logo-text {
+  font-size: 64px;
+  text-shadow: 0 0 15px #00aaff;
+  margin: 0;
+}
+
+#splash .version {
+  font-size: 12px;
+  margin-top: -10px;
+  color: #cceeff;
+}
+
+/* Forms */
+form label {
+  display: block;
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+input[type=text], input[type=number], select {
+  width: 100%;
+  padding: 8px 6px;
+  margin-top: 6px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  font-size: 1em;
+}
+
+input[readonly] {
+  background: #eee;
+}
+
+button {
+  margin-top: 15px;
+  background-color: #0056b3;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  font-size: 1em;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #003d7a;
+}
+
+/* Confirmation message */
+.confirmation {
+  background-color: #d4edda;
+  border: 2px solid #28a745;
+  color: #155724;
+  font-size: 1.2em;
+  font-weight: bold;
+  text-align: center;
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 10px;
+  display: none;
+}
+
+/* Scroll horizontal container */
+.scroll-container {
+  overflow-x: auto;
+  margin-top: 20px;
+  border: 1px solid #ccc;
+  white-space: nowrap;
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+/* Table styles */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 700px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+th {
+  background-color: #007bff;
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+  color: black;
+}
+
+/* Buttons container */
+.btn-container > button {
+  margin: 5px 10px 5px 0;
+}
+
+/* Login container */
+#login-container {
+  max-width: 400px;
+  margin: 80px auto 20px;
+  background: white;
+  border: 3px solid orange;
+  border-radius: 10px;
+  padding: 30px;
+  box-sizing: border-box;
+}
+
+#login-container label {
+  color: black;
+}
+
+#login-container input {
+  font-size: 1em;
+  padding: 7px;
+  margin-top: 6px;
+}
+
+#login-container button {
+  width: 100%;
+}
+
+/* Large green checkmark */
+.checkmark {
+  font-size: 48px;
+  color: #28a745;
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* Filters container */
+.filters {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.filters select,
+.filters input {
+  flex: 1 1 200px;
+  max-width: 300px;
+}
+
+/* WhatsApp button */
+#whatsapp-btn {
+  position: fixed;
+  bottom: 60px;
+  right: 20px;
+  background-color: #25d366;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+#whatsapp-btn img {
+  width: 35px;
+  height: 35px;
+}
+
+/* Small scrollbar style for horizontal */
+.scroll-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background: #007bff;
+  border-radius: 4px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+  background: #e1e1e1;
+}
+
+/* Responsive */
+@media(max-width: 600px) {
+  .filters {
+    flex-direction: column;
+  }
+}
+    
+</style>
+</head>
+<body>
+    <Center>
+    <h3>Buscador Google</h3>
+    </Center>
+    <form id="googleSearchForm" target="_blank" rel="noopener">
+      <input type="search" id="googleSearchInput" placeholder="Buscar en Google..." required />
+      <button type="submit" title="Buscar Google">🔍</button>
+    </form>
+    
+    
+    
+    
+<Center>
+  <h2>Instrucciones de uso app Gepro</h2>
+  </Center>
+  <ul>
+  <p>Bienvenido a la aplicación de inventario y ventas. Aquí algunas instrucciones básicas:</p>
+  </ul>
+  <ul>
+    <li>En la pantalla principal puedes agregar productos, editar, vender o eliminar.</li>
+    <li>Define la tasa de cambio diaria para que los precios en USD se calculen correctamente.</li>
+    <li>Utiliza el filtro para buscar productos por nombre o categoría.</li>
+    <li>Al vender un producto, se genera una factura que puedes enviar por WhatsApp.</li>
+    <li>En el resumen de ventas puedes ver todas las ventas realizadas y enviarlas también.</li>
+    <li>Para cambiar el nombre de la bodega, usa el botón con lápiz al lado del nombre.</li>
+    <li>La aplicación guarda todo en almacenamiento local para funcionar sin internet.</li>
+    <li>El botón "Ingresar en Prueba" activa una versión de prueba de 7 días.</li>
+    <li>La app cuenta con un buscador Google para buscar información por internet directamente desde la página instrucciones.</li>
+  </ul>
+ 
+ 
+ 
+ <p>
+     <p>
+         
+     <p>
+  
+  
+  
+ 
+</body>
+
+
+ 
+    
+    <!-- Botón flotante para volver a index.html -->
+    <button class="btn-flotante" onclick="volverIndex()" aria-label="Volver a página principal">
+        <!-- Icono de flecha -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M15 18l-6-6 6-6" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Inicio
+    </button>
+
+
+<script>
+    
+      // Función para redirigir a la página principal index.html
+        function volverIndex() {
+            // Puedes usar location.href o location.assign
+            window.location.href = 'index.html';
+        }
+    
+    
+    
+       const googleSearchForm = document.getElementById("googleSearchForm");
+const googleSearchInput = document.getElementById("googleSearchInput");
+const darkModeToggle = document.getElementById("darkModeToggle");
+const messageContainer = document.getElementById("messageContainer");
+
+function showMessage(msg) {
+  messageContainer.textContent = msg;
+  messageContainer.classList.remove("hidden");
+  setTimeout(() => messageContainer.classList.add("hidden"), 3000);
+}
+
+function loadDarkMode() {
+  const dark = localStorage.getItem("gep_darkMode");
+  if (dark === "true") {
+    document.body.classList.add("dark-mode");
+  }
+}
+
+function toggleDarkMode() {
+  const isDark = document.body.classList.toggle("dark-mode");
+  localStorage.setItem("gep_darkMode", isDark);
+}
+
+googleSearchForm.onsubmit = (e) => {
+  e.preventDefault();
+  const query = googleSearchInput.value.trim();
+  if (!query) {
+    alert("Ingrese un término de búsqueda");
+    return;
+  }
+  const url = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+  window.open(url, "_blank", "noopener");
+  showMessage(`✔️ Buscando "${query}" en Google...`);
+};
+
+darkModeToggle.onclick = toggleDarkMode;
+
+window.onload = () => {
+  loadDarkMode();
+};
+</script>
+    
+</html>

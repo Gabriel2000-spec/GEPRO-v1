@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Inventario y Ventas</title>
+<link rel="stylesheet" href="estilos.css" />
+</head>
+
+<style>
+    
+    body {
+  font-family: Arial, sans-serif;
+  margin: 0; padding: 0;
+  background: #f9f9f9;
+  color: #222;
+}
+
+h1, h2, h3 {
+  margin: 0.5em 0;
+}
+
+button {
+  cursor: pointer;
+  padding: 0.5em 1em;
+  border: none;
+  background: #0044cc;
+  color: white;
+  border-radius: 4px;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #0033aa;
+}
+
+input, select {
+  width: 100%;
+  padding: 0.4em;
+  margin: 0.3em 0 1em 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.card {
+  background: white;
+  margin: 1em auto;
+  padding: 1em;
+  border-radius: 8px;
+  max-width: 900px;
+  box-shadow: 0 0 10px #ccc;
+}
+
+.scroll-horizontal {
+  display: flex;
+  overflow-x: auto;
+  padding-bottom: 1em;
+}
+
+.producto-item {
+  min-width: 350px;
+  border: 1px solid #ddd;
+  margin-right: 1em;
+  padding: 1em;
+  border-radius: 8px;
+  background: #fafafa;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.producto-item h4 {
+  margin: 0 0 0.3em 0;
+}
+
+.producto-item small {
+  font-size: 0.8em;
+  color: #555;
+}
+
+.actions {
+  margin-top: 1em;
+  display: flex;
+  justify-content: space-between;
+}
+
+.actions button {
+  font-size: 0.9em;
+  padding: 0.3em 0.6em;
+  background: #007700;
+  border-radius: 4px;
+}
+
+.actions button.editar {
+  background: #0077bb;
+}
+
+.actions button.eliminar {
+  background: #cc0000;
+}
+
+.actions button.vender {
+  background: #ffaa00;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Modal */
+
+.modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 1.5em;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 90%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1em;
+}
+
+.factura-content pre {
+  white-space: pre-wrap;
+  background: #eee;
+  padding: 1em;
+  border-radius: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Login */
+.login-container {
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(45deg, #ff6600, #ffcc00);
+}
+
+.login-box {
+  background: white;
+  padding: 2em;
+  border-radius: 12px;
+  box-shadow: 0 0 15px #aa6600;
+  max-width: 320px;
+  width: 90%;
+  text-align: center;
+}
+
+.login-box input {
+  margin-bottom: 1em;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.prueba-banner {
+  margin-top: 1em;
+  padding: 0.5em;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.prueba-banner.verde {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.prueba-banner.rojo {
+  background-color: #F44336;
+  color: white;
+}
+
+header {
+  background: #f2711c;
+  color: white;
+  padding: 1em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  font-weight: 700;
+}
+
+header button {
+  background: white;
+  color: #f2711c;
+  font-weight: 700;
+  border-radius: 4px;
+  margin-left: 0.5em;
+  padding: 0.3em 0.6em;
+}
+
+header button:hover {
+  background: #f5f5f5;
+}
+
+#instrucciones-btn {
+  background: white;
+  color: #f2711c;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+#instrucciones-btn:hover {
+  background: #f5f5f5;
+}
+    /* Scroll horizontal con color suave y agradable */
+.scroll-horizontal {
+  display: flex;
+  overflow-x: auto;
+  padding-bottom: 1em;
+  scrollbar-width: thin;
+  scrollbar-color: #a3c4f3 #e1eaff;
+  background: #f0f5fb;
+  border-radius: 10px;
+  box-shadow: inset 0 0 8px #d0ddf7;
+}
+
+/* Para navegadores Webkit (Chrome, Edge, Safari) */
+.scroll-horizontal::-webkit-scrollbar {
+  height: 10px;
+  background-color: #e1eaff;
+  border-radius: 10px;
+}
+
+.scroll-horizontal::-webkit-scrollbar-thumb {
+  background-color: #a3c4f3;
+  border-radius: 10px;
+  box-shadow: 0 0 5px #7aa4e6;
+}
+
+/* Estilo factura modal */
+.modal-factura .modal-content, #modal-factura .modal-content {
+  background: #e3f0ff; /* azul bajito */
+  border: 2px solid #5a9bf6; /* borde brillante azul */
+  box-shadow: 0 0 15px #5a9bf6;
+  color: #0c3c78;
+}
+
+.factura-content pre {
+  background: #d3e4ff;
+  border: 1px solid #7ba6f9;
+  color: #0c3c78;
+  font-weight: 600;
+  font-family: 'Courier New', Courier, monospace;
+  border-radius: 8px;
+}
+
+/* Botones factura */
+#enviar-whatsapp-factura-btn, #cerrar-factura-btn {
+  background: #5a9bf6;
+  color: white;
+  font-weight: 700;
+  border-radius: 6px;
+  padding: 0.6em 1.2em;
+  margin-right: 0.5em;
+  border: none;
+  transition: background 0.3s ease;
+}
+
+#enviar-whatsapp-factura-btn:hover, #cerrar-factura-btn:hover {
+  background: #417edb;
+}
+
+/* General mejoras app */
+
+button {
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+button:focus, input:focus, select:focus {
+  outline: none;
+  box-shadow: 0 0 5px #5a9bf6;
+  border-color: #5a9bf6;
+}
+
+.producto-item {
+  transition: transform 0.3s ease;
+}
+
+.producto-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(90,155,246,0.4);
+}
+
+/* Header más moderno */
+header {
+  background: linear-gradient(90deg, #5a9bf6, #417edb);
+  color: white;
+  padding: 1em 2em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(66,133,244,0.6);
+  border-radius: 0 0 10px 10px;
+}
+
+header h1 {
+  font-weight: 900;
+  font-size: 1.5em;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+header button {
+  background: rgba(255,255,255,0.85);
+  color: #417edb;
+  font-weight: 700;
+  border-radius: 6px;
+  margin-left: 0.5em;
+  padding: 0.4em 0.8em;
+  box-shadow: 0 2px 8px rgba(65,126,219,0.3);
+  transition: background 0.3s ease;
+}
+
+header button:hover {
+  background: white;
+  color: #2a58a0;
+  box-shadow: 0 4px 12px rgba(42,88,160,0.6);
+}
+
+/* Inputs y selects más modernos */
+input, select {
+  border: 1px solid #aac9ff;
+  background: #f7faff;
+  color: #1a2a4a;
+  font-weight: 600;
+  padding: 0.5em 0.7em;
+  border-radius: 6px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input::placeholder, select::placeholder {
+  color: #a0b1d6;
+}
+
+/* Banners prueba */
+.prueba-banner.verde {
+  background-color: #2e7d32;
+  color: white;
+  box-shadow: 0 0 10px #43a047;
+}
+
+.prueba-banner.rojo {
+  background-color: #c62828;
+  color: white;
+  box-shadow: 0 0 12px #e53935;
+}
+
+    .resumen-buttons {
+  margin-top: 1em;
+  display: flex;
+  gap: 8px;
+}
+
+#eliminar-resumen-btn {
+  background: #cc0000;
+  color: white;
+  font-weight: 700;
+  border-radius: 6px;
+  padding: 0.6em 1.2em;
+  border: none;
+  box-shadow: 0 2px 6px rgba(204,0,0,0.7);
+  transition: background 0.3s ease;
+}
+
+#eliminar-resumen-btn:hover {
+  background: #a30000;
+  box-shadow: 0 4px 10px rgba(163,0,0,0.9);
+}
+
+    
+    
+    .boton {
+            background-color: #3498db;
+            color: white;
+            padding: 05px 10px;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .boton:hover {
+            background-color: #2980b9;
+        }
+    
+    
+</style>
+
+
+
+<body>
+
+<div id="login-container" class="login-container">
+  <div class="login-box">
+    <h2>Inicio de Sesión</h2>
+    <input type="text" id="user-input" placeholder="Usuario" />
+    <input type="password" id="pass-input" placeholder="Contraseña" />
+    <div class="buttons">
+      <button id="btn-login">Ingresar</button>
+      <button id="btn-prueba">Ingresar en Prueba</button>
+    </div>
+    
+    
+    <div id="prueba-banner" class="prueba-banner hidden"></div>
+    <il>
+    <h1>Gepro | App.</h1>
+    versión 2.2
+    </il>
+  </div>
+  
+</div>
+
+<div id="app" class="hidden">
+
+  <header>
+      <ul>
+    <h2><span id="bodega-nombre">Nombre de la Bodega
+    </span>
+    </h2>
+    
+    
+        
+        
+            
+                
+        <ul>
+            
+            
+          <div style="display: flex; justify-content: center;">
+    
+    
+      <button id="editar-bodega-btn" title="Editar nombre bodega">✏️</button>
+    </Center>
+    
+    <button class="boton" onclick="redirigir()">Instrucciones</button>
+    
+    
+    <button id="cerrar-sesion-btn">Cerrar Sesión</button>
+    
+  </header>
+
+  <section id="tasa-section" class="card">
+      <Center>
+    <h3>Tasa BCV del día (Bs/USD):</h3>
+    </Center>
+    <input type="number" id="tasa-input" step="0.01" min="0" />
+    <button id="guardar-tasa-btn">Guardar Tasa</button>
+    <p id="tasa-actual-text"></p>
+  </section>
+
+  <section id="agregar-producto-section" class="card">
+    <h2>Agregar Producto</h2>
+    <input type="text" id="nombre-producto" placeholder="Nombre del producto" />
+    <label for="tipo-unidad">Tipo unidad:</label>
+    <select id="tipo-unidad">
+      <option value="Unidad">Unidad</option>
+      <option value="Kg">Kg</option>
+      <option value="Caja">Caja</option>
+    </select>
+    <label for="categoria-producto">Seleccione una categoría:</label>
+    <select id="categoria-producto">
+      <option value="">-- Seleccione categoría --</option>
+      <option value="Charcutería">Charcutería</option>
+      <option value="Bebidas">Bebidas</option>
+      <option value="Limpieza">Limpieza</option>
+      <option value="Vicio">Vicio</option>
+      <option value="Víveres">Víveres</option>
+      <option value="Dulcería">Dulcería</option>
+      <option value="Electrónica">Electrónica</option>
+      <option value="Otros">Otros</option>
+    </select>
+    <input type="number" id="costo-bs" placeholder="Costo en Bs" min="0" step="0.01" />
+    <input type="number" id="cantidad-paca" placeholder="Cantidad por paca (ej: 24 unidad)" min="1" />
+    <input type="number" id="ganancia-pct" placeholder="Introducir porcentaje de ganancia" min="0" max="100" step="0.01" />
+    <button id="agregar-producto-btn">Agregar Producto</button>
+  </section>
+
+  <section id="filtros-section" class="card">
+    <input type="text" id="buscar-nombre" placeholder="Buscar por nombre..." />
+    <select id="filtrar-categoria">
+      <option value="">-- Filtrar por categoría --</option>
+      <option value="Charcutería">Charcutería</option>
+      <option value="Bebidas">Bebidas</option>
+      <option value="Limpieza">Limpieza</option>
+      <option value="Vicio">Vicio</option>
+      <option value="Víveres">Víveres</option>
+      <option value="Dulcería">Dulcería</option>
+      <option value="Electrónica">Electrónica</option>
+      <option value="Otros">Otros</option>
+    </select>
+  </section>
+
+  <section id="productos-lista" class="card scroll-horizontal">
+    <!-- Productos se cargan aquí dinámicamente -->
+  </section>
+
+  
+  <section id="resumen-ventas" class="card">
+  <h2>Resumen de ventas y facturas</h2>
+  <div id="resumen-contenido"></div>
+  <div class="resumen-buttons">
+    <button id="enviar-whatsapp-resumen-btn">Enviar Resumen a WhatsApp</button>
+    <button id="eliminar-resumen-btn" style="background:#cc0000; margin-left:8px;">Eliminar Todo</button>
+  </div>
+</section>
+
+  
+  
+  
+  
+
+  <!-- Modal para vender producto -->
+  <div id="modal-vender" class="modal hidden">
+    <div class="modal-content">
+      <h3>Vender Producto: <span id="vender-nombre-producto"></span></h3>
+      <label for="vender-cantidad">Cantidad:</label>
+      <input type="number" id="vender-cantidad" min="1" />
+      <label for="vender-pago">Tipo de pago:</label>
+      <select id="vender-pago">
+        <option value="Efectivo">Efectivo</option>
+        <option value="Transferencia">Transferencia</option>
+        <option value="Tarjeta">Tarjeta</option>
+        <option value="Otro">Otro</option>
+      </select>
+      <label for="vender-cliente">Nombre del cliente:</label>
+      <input type="text" id="vender-cliente" />
+      <div class="modal-buttons">
+        <button id="confirmar-venta-btn">Confirmar Venta</button>
+        <button id="cancelar-venta-btn">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para editar producto -->
+  <div id="modal-editar" class="modal hidden">
+    <div class="modal-content">
+      <h3>Editar Producto: <span id="editar-nombre-producto"></span></h3>
+      <input type="text" id="editar-nombre" placeholder="Nombre del producto" />
+      <select id="editar-tipo-unidad">
+        <option value="Unidad">Unidad</option>
+        <option value="Kg">Kg</option>
+        <option value="Caja">Caja</option>
+      </select>
+      <select id="editar-categoria">
+        <option value="Charcutería">Charcutería</option>
+        <option value="Bebidas">Bebidas</option>
+        <option value="Limpieza">Limpieza</option>
+        <option value="Vicio">Vicio</option>
+        <option value="Víveres">Víveres</option>
+        <option value="Dulcería">Dulcería</option>
+        <option value="Electrónica">Electrónica</option>
+        <option value="Otros">Otros</option>
+      </select>
+      <input type="number" id="editar-costo-bs" placeholder="Costo en Bs" min="0" step="0.01" />
+      <input type="number" id="editar-cantidad-paca" placeholder="Cantidad por paca" min="1" />
+      <input type="number" id="editar-ganancia-pct" placeholder="Porcentaje de ganancia" min="0" max="100" step="0.01" />
+      <div class="modal-buttons">
+        <button id="guardar-edicion-btn">Guardar</button>
+        <button id="cancelar-edicion-btn">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para editar nombre bodega -->
+  <div id="modal-bodega" class="modal hidden">
+    <div class="modal-content">
+      <h3>Editar Nombre de la Bodega</h3>
+      <input type="text" id="input-nombre-bodega" placeholder="Nombre de la Bodega" />
+      <div class="modal-buttons">
+        <button id="guardar-bodega-btn">Guardar</button>
+        <button id="cancelar-bodega-btn">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para mostrar factura -->
+  <div id="modal-factura" class="modal hidden">
+    <div class="modal-content factura-content">
+      <h3>Factura</h3>
+      <pre id="factura-text"></pre>
+      <button id="enviar-whatsapp-factura-btn">Enviar a WhatsApp</button>
+      <button id="cerrar-factura-btn">Cerrar</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+    const STORAGE_KEYS = {
+  tasa: 'tasa_dolar',
+  productos: 'productos',
+  ventas: 'ventas',
+  bodega: 'nombre_bodega',
+  pruebaFecha: 'fecha_inicio_prueba',
+  usuarioLogeado: 'usuario_logeado',
+};
+
+const MAX_DIAS_PRUEBA = 7;
+
+// Estado app
+let tasaDolar = 0;
+let productos = [];
+let ventas = [];
+let bodegaNombre = 'Nombre de la Bodega';
+let usuarioLogeado = false;
+let productoEditandoId = null;
+let ventaProductoId = null;
+
+// --- UTILIDADES ---
+
+function saveToStorage(key, data) {
+  localStorage.setItem(key, JSON.stringify(data));
+}
+
+function loadFromStorage(key, defaultValue = null) {
+  const data = localStorage.getItem(key);
+  if (!data) return defaultValue;
+  try {
+    return JSON.parse(data);
+  } catch {
+    return defaultValue;
+  }
+}
+
+function formatBs(value) {
+  return `${value.toFixed(2)} Bs`;
+}
+
+function formatUsd(value) {
+  return `$${value.toFixed(2)}`;
+}
+
+function calcularPrecioVenta(costoBs, gananciaPct) {
+  return costoBs * (1 + gananciaPct / 100);
+}
+
+function formatDate(d) {
+  return d.toLocaleDateString('es-VE');
+}
+
+function generarId() {
+  return Math.random().toString(36).substr(2, 9);
+}
+
+function openUrlWhatsapp(text) {
+  const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+  window.open(url, '_blank');
+}
+
+// --- LOGIN ---
+
+const loginContainer = document.getElementById('login-container');
+const appContainer = document.getElementById('app');
+const userInput = document.getElementById('user-input');
+const passInput = document.getElementById('pass-input');
+const btnLogin = document.getElementById('btn-login');
+const btnPrueba = document.getElementById('btn-prueba');
+const pruebaBanner = document.getElementById('prueba-banner');
+
+// --- LOGIN CONTINUACIÓN ---
+
+function checkPruebaBanner() {
+  const fechaInicio = localStorage.getItem(STORAGE_KEYS.pruebaFecha);
+  if (!fechaInicio) {
+    pruebaBanner.classList.add('hidden');
+    return;
+  }
+  const inicio = new Date(fechaInicio);
+  const hoy = new Date();
+  const diffMs = hoy - inicio;
+  const diffDias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const diasRestantes = MAX_DIAS_PRUEBA - diffDias;
+
+  if (diasRestantes > 0) {
+    pruebaBanner.classList.remove('hidden');
+    if (diasRestantes === 1) {
+      pruebaBanner.textContent = `Queda 1 día de prueba`;
+      pruebaBanner.classList.remove('verde');
+      pruebaBanner.classList.add('rojo');
+    } else {
+      pruebaBanner.textContent = `Prueba activa: ${diasRestantes} días restantes`;
+      pruebaBanner.classList.remove('rojo');
+      pruebaBanner.classList.add('verde');
+    }
+  } else {
+    pruebaBanner.textContent = `La prueba ha expirado`;
+    pruebaBanner.classList.remove('verde');
+    pruebaBanner.classList.add('rojo');
+  }
+}
+
+btnLogin.addEventListener('click', () => {
+  const user = userInput.value.trim();
+  const pass = passInput.value.trim();
+  if (user === 'admin' && pass === '1234') {
+    usuarioLogeado = true;
+    localStorage.setItem(STORAGE_KEYS.usuarioLogeado, 'true');
+    iniciarApp();
+  } else {
+    alert('Usuario o contraseña incorrectos');
+  }
+});
+
+btnPrueba.addEventListener('click', () => {
+  const fechaInicio = localStorage.getItem(STORAGE_KEYS.pruebaFecha);
+  if (!fechaInicio) {
+    localStorage.setItem(STORAGE_KEYS.pruebaFecha, new Date().toISOString());
+  }
+  usuarioLogeado = true;
+  localStorage.setItem(STORAGE_KEYS.usuarioLogeado, 'true');
+  iniciarApp();
+});
+
+function iniciarApp() {
+  loginContainer.classList.add('hidden');
+  appContainer.classList.remove('hidden');
+  cargarDatos();
+  checkPruebaBanner();
+  renderBodegaNombre();
+  renderTasa();
+  renderProductos();
+  renderResumenVentas();
+}
+
+// Verifica si ya está logeado al cargar la página
+window.addEventListener('load', () => {
+  const logeado = localStorage.getItem(STORAGE_KEYS.usuarioLogeado);
+  if (logeado === 'true') {
+    usuarioLogeado = true;
+    iniciarApp();
+  } else {
+    loginContainer.classList.remove('hidden');
+    appContainer.classList.add('hidden');
+    checkPruebaBanner();
+  }
+});
+
+document.getElementById('cerrar-sesion-btn').addEventListener('click', () => {
+  usuarioLogeado = false;
+  localStorage.removeItem(STORAGE_KEYS.usuarioLogeado);
+  loginContainer.classList.remove('hidden');
+  appContainer.classList.add('hidden');
+});
+
+// --- BODEGA NOMBRE ---
+
+const bodegaNombreSpan = document.getElementById('bodega-nombre');
+const editarBodegaBtn = document.getElementById('editar-bodega-btn');
+const modalBodega = document.getElementById('modal-bodega');
+const inputNombreBodega = document.getElementById('input-nombre-bodega');
+const guardarBodegaBtn = document.getElementById('guardar-bodega-btn');
+const cancelarBodegaBtn = document.getElementById('cancelar-bodega-btn');
+
+editarBodegaBtn.addEventListener('click', () => {
+  inputNombreBodega.value = bodegaNombre;
+  modalBodega.classList.remove('hidden');
+});
+
+guardarBodegaBtn.addEventListener('click', () => {
+  const nombre = inputNombreBodega.value.trim();
+  if (nombre) {
+    bodegaNombre = nombre;
+    saveToStorage(STORAGE_KEYS.bodega, bodegaNombre);
+    renderBodegaNombre();
+    modalBodega.classList.add('hidden');
+  } else {
+    alert('Nombre no puede estar vacío');
+  }
+});
+
+cancelarBodegaBtn.addEventListener('click', () => {
+  modalBodega.classList.add('hidden');
+});
+
+function renderBodegaNombre() {
+  bodegaNombreSpan.textContent = bodegaNombre;
+}
+
+// --- TASA DOLAR ---
+
+const tasaInput = document.getElementById('tasa-input');
+const guardarTasaBtn = document.getElementById('guardar-tasa-btn');
+const tasaActualText = document.getElementById('tasa-actual-text');
+
+guardarTasaBtn.addEventListener('click', () => {
+  const val = parseFloat(tasaInput.value);
+  if (!isNaN(val) && val > 0) {
+    tasaDolar = val;
+    saveToStorage(STORAGE_KEYS.tasa, tasaDolar);
+    renderTasa();
+    alert('Tasa guardada');
+  } else {
+    alert('Ingrese un valor válido para la tasa');
+  }
+});
+
+function renderTasa() {
+  if (tasaDolar > 0) {
+    tasaActualText.textContent = `Tasa actual: ${tasaDolar.toFixed(2)} Bs/USD`;
+    tasaInput.value = tasaDolar;
+  } else {
+    tasaActualText.textContent = 'No hay tasa guardada';
+  }
+}
+
+// --- PRODUCTOS ---
+
+const nombreProductoInput = document.getElementById('nombre-producto');
+const tipoUnidadSelect = document.getElementById('tipo-unidad');
+const categoriaProductoSelect = document.getElementById('categoria-producto');
+const costoBsInput = document.getElementById('costo-bs');
+const cantidadPacaInput = document.getElementById('cantidad-paca');
+const gananciaPctInput = document.getElementById('ganancia-pct');
+const agregarProductoBtn = document.getElementById('agregar-producto-btn');
+const productosLista = document.getElementById('productos-lista');
+
+agregarProductoBtn.addEventListener('click', () => {
+  const nombre = nombreProductoInput.value.trim();
+  const tipo = tipoUnidadSelect.value;
+  const categoria = categoriaProductoSelect.value;
+  const costoBs = parseFloat(costoBsInput.value);
+  const cantidadPaca = parseInt(cantidadPacaInput.value);
+  const gananciaPct = parseFloat(gananciaPctInput.value);
+
+  if (!nombre || !categoria || isNaN(costoBs) || isNaN(cantidadPaca) || isNaN(gananciaPct)) {
+    alert('Complete todos los campos correctamente');
+    return;
+  }
+
+  // Nuevo producto
+  const producto = {
+    id: generarId(),
+    nombre,
+    tipo,
+    categoria,
+    costoBs,
+    cantidadPaca,
+    gananciaPct,
+    fecha: new Date().toISOString()
+  };
+
+  productos.push(producto);
+  saveToStorage(STORAGE_KEYS.productos, productos);
+  limpiarCamposProducto();
+  renderProductos();
+});
+
+function limpiarCamposProducto() {
+  nombreProductoInput.value = '';
+  categoriaProductoSelect.value = '';
+  costoBsInput.value = '';
+  cantidadPacaInput.value = '';
+  gananciaPctInput.value = '';
+}
+
+// --- FILTROS ---
+
+const buscarNombreInput = document.getElementById('buscar-nombre');
+const filtrarCategoriaSelect = document.getElementById('filtrar-categoria');
+
+buscarNombreInput.addEventListener('input', renderProductos);
+filtrarCategoriaSelect.addEventListener('change', renderProductos);
+
+function renderProductos() {
+  productosLista.innerHTML = '';
+  let filtered = productos;
+
+  const filtroNombre = buscarNombreInput.value.trim().toLowerCase();
+  if (filtroNombre) {
+    filtered = filtered.filter(p => p.nombre.toLowerCase().includes(filtroNombre));
+  }
+
+  const filtroCategoria = filtrarCategoriaSelect.value;
+  if (filtroCategoria) {
+    filtered = filtered.filter(p => p.categoria === filtroCategoria);
+  }
+
+  if (filtered.length === 0) {
+    productosLista.innerHTML = '<p>No hay productos que coincidan con el filtro.</p>';
+    return;
+  }
+
+  filtered.forEach(p => {
+    const precioVenta = calcularPrecioVenta(p.costoBs, p.gananciaPct);
+    const precioUsd = tasaDolar > 0 ? precioVenta / tasaDolar : 0;
+    const gananciaBs = precioVenta - p.costoBs;
+    const totalUnidad = precioVenta / p.cantidadPaca;
+
+    const div = document.createElement('div');
+    div.className = 'producto-item';
+
+    div.innerHTML = `
+      <h4>${p.nombre}</h4>
+      <small>
+      ${p.tipo} | Categoría:${p.categoria}</small><br/>
+      <small>Fecha: ${formatDate(new Date(p.fecha))}</small><br/>
+      <p>
+        Costo: ${formatBs(p.costoBs)}<br/>
+        Precio Venta: 
+        ${formatBs(precioVenta)} 
+        USD:${formatUsd(precioUsd)}<br/>
+        Precio por unidad: 
+        ${formatBs(totalUnidad)}<br/>
+        Ganancia: ${gananciaBs.toFixed(2)}Bs
+        <br/>
+        
+       Porcentaje:${p.gananciaPct}%<br/>
+        Cantidad por paca: 
+        ${p.cantidadPaca}
+      </p>
+      <div class="actions">
+        <button class="vender" data-id="${p.id}">Vender</button>
+        <button class="editar" data-id="${p.id}">Editar</button>
+        <button class="eliminar" data-id="${p.id}">Eliminar</button>
+      </div>
+    `;
+
+    productosLista.appendChild(div);
+  });
+
+  // Eventos botones
+  document.querySelectorAll('.vender').forEach(btn => {
+    btn.onclick = () => abrirModalVender(btn.dataset.id);
+  });
+  document.querySelectorAll('.editar').forEach(btn => {
+    btn.onclick = () => abrirModalEditar(btn.dataset.id);
+  });
+  document.querySelectorAll('.eliminar').forEach(btn => {
+    btn.onclick = () => eliminarProducto(btn.dataset.id);
+  });
+}
+
+function eliminarProducto(id) {
+  if (confirm('¿Seguro que desea eliminar este producto?')) {
+    productos = productos.filter(p => p.id !== id);
+    saveToStorage(STORAGE_KEYS.productos, productos);
+    renderProductos();
+  }
+}
+
+// --- MODAL VENDER ---
+
+const modalVender = document.getElementById('modal-vender');
+const venderNombreProductoSpan = document.getElementById('vender-nombre-producto');
+const venderCantidadInput = document.getElementById('vender-cantidad');
+const venderPagoSelect = document.getElementById('vender-pago');
+const venderClienteInput = document.getElementById('vender-cliente');
+const confirmarVentaBtn = document.getElementById('confirmar-venta-btn');
+const cancelarVentaBtn = document.getElementById('cancelar-venta-btn');
+
+function abrirModalVender(id) {
+  ventaProductoId = id;
+  const producto = productos.find(p => p.id === id);
+  if (!producto) return alert('Producto no encontrado');
+  venderNombreProductoSpan.textContent = producto.nombre;
+  venderCantidadInput.value = 1;
+  venderPagoSelect.value = 'Efectivo';
+  venderClienteInput.value = '';
+  modalVender.classList.remove('hidden');
+}
+
+confirmarVentaBtn.addEventListener('click', () => {
+  const cantidad = parseInt(venderCantidadInput.value);
+  const tipoPago = venderPagoSelect.value;
+  const cliente = venderClienteInput.value.trim();
+
+  if (isNaN(cantidad) || cantidad <= 0) {
+    alert('Ingrese una cantidad válida');
+    return;
+  }
+  if (!cliente) {
+    alert('Ingrese el nombre del cliente');
+    return;
+  }
+
+  const producto = productos.find(p => p.id === ventaProductoId);
+  if (!producto) {
+    alert('Producto no encontrado');
+    return;
+  }
+
+  const precioVenta = calcularPrecioVenta(producto.costoBs, producto.gananciaPct);
+  const totalBs = precioVenta * cantidad;
+  const totalUsd = tasaDolar > 0 ? totalBs / tasaDolar : 0;
+
+  // Crear venta
+  const venta = {
+    id: generarId(),
+    productoId: producto.id,
+    nombre: producto.nombre,
+    cantidad,
+    tipoPago,
+    cliente,
+    precioUnitarioBs: precioVenta,
+    totalBs,
+    totalUsd,
+    fecha: new Date().toISOString()
+  };
+
+  ventas.push(venta);
+  saveToStorage(STORAGE_KEYS.ventas, ventas);
+
+  modalVender.classList.add('hidden');
+
+  mostrarFactura(venta);
+  renderResumenVentas();
+});
+
+cancelarVentaBtn.addEventListener('click', () => {
+  modalVender.classList.add('hidden');
+});
+
+// --- MODAL EDITAR ---
+
+const modalEditar = document.getElementById('modal-editar');
+const editarNombreProductoSpan = document.getElementById('editar-nombre-producto');
+const editarNombreInput = document.getElementById('editar-nombre');
+const editarTipoUnidadSelect = document.getElementById('editar-tipo-unidad');
+const editarCategoriaSelect = document.getElementById('editar-categoria');
+const editarCostoBsInput = document.getElementById('editar-costo-bs');
+const editarCantidadPacaInput = document.getElementById('editar-cantidad-paca');
+const editarGananciaPctInput = document.getElementById('editar-ganancia-pct');
+const guardarEdicionBtn = document.getElementById('guardar-edicion-btn');
+const cancelarEdicionBtn = document.getElementById('cancelar-edicion-btn');
+
+function abrirModalEditar(id) {
+  productoEditandoId = id;
+  const producto = productos.find(p => p.id === id);
+  if (!producto) return alert('Producto no encontrado');
+
+  editarNombreProductoSpan.textContent = producto.nombre;
+  editarNombreInput.value = producto.nombre;
+  editarTipoUnidadSelect.value = producto.tipo;
+  editarCategoriaSelect.value = producto.categoria;
+  editarCostoBsInput.value = producto.costoBs;
+  editarCantidadPacaInput.value = producto.cantidadPaca;
+  editarGananciaPctInput.value = producto.gananciaPct;
+
+  modalEditar.classList.remove('hidden');
+}
+
+guardarEdicionBtn.addEventListener('click', () => {
+  const nombre = editarNombreInput.value.trim();
+  const tipo = editarTipoUnidadSelect.value;
+  const categoria = editarCategoriaSelect.value;
+  const costoBs = parseFloat(editarCostoBsInput.value);
+  const cantidadPaca = parseInt(editarCantidadPacaInput.value);
+  const gananciaPct = parseFloat(editarGananciaPctInput.value);
+
+  if (!nombre || !categoria || isNaN(costoBs) || isNaN(cantidadPaca) || isNaN(gananciaPct)) {
+    alert('Complete todos los campos correctamente');
+    return;
+  }
+
+  const index = productos.findIndex(p => p.id === productoEditandoId);
+  if (index === -1) {
+    alert('Producto no encontrado');
+    modalEditar.classList.add('hidden');
+    return;
+  }
+
+  productos[index] = {
+    ...productos[index],
+    nombre,
+    tipo,
+    categoria,
+    costoBs,
+    cantidadPaca,
+    gananciaPct,
+  };
+
+  saveToStorage(STORAGE_KEYS.productos, productos);
+  modalEditar.classList.add('hidden');
+  renderProductos();
+});
+
+cancelarEdicionBtn.addEventListener('click', () => {
+  modalEditar.classList.add('hidden');
+});
+
+// --- FACTURA ---
+
+const modalFactura = document.getElementById('modal-factura');
+const facturaText = document.getElementById('factura-text');
+const enviarWhatsappFacturaBtn = document.getElementById('enviar-whatsapp-factura-btn');
+const cerrarFacturaBtn = document.getElementById('cerrar-factura-btn');
+
+function mostrarFactura(venta) {
+  const fecha = formatDate(new Date(venta.fecha));
+  const textoFactura = `
+Factura para: ${venta.cliente}
+Producto: ${venta.nombre}
+Cantidad: ${venta.cantidad}
+Precio unitario: 
+${venta.precioUnitarioBs.toFixed(2)} Bs
+Total: 
+${venta.totalBs.toFixed(2)}Bs
+Total: ${venta.totalUsd.toFixed(2)} USD
+Tipo de pago: ${venta.tipoPago}
+Fecha: ${fecha}
+  `;
+  facturaText.textContent = textoFactura;
+  modalFactura.classList.remove('hidden');
+
+  enviarWhatsappFacturaBtn.onclick = () => openUrlWhatsapp(textoFactura);
+  cerrarFacturaBtn.onclick = () => modalFactura.classList.add('hidden');
+}
+
+// --- RESUMEN VENTAS ---
+
+const resumenContenido = document.getElementById('resumen-contenido');
+const enviarWhatsappResumenBtn = document.getElementById('enviar-whatsapp-resumen-btn');
+
+function renderResumenVentas() {
+  if (ventas.length === 0) {
+    resumenContenido.textContent = 'No hay ventas registradas.';
+    return;
+  }
+
+  let textoResumen = '';
+  ventas.forEach((venta, ) => {
+          textoResumen += `Venta \nCliente:${venta.cliente}
+==================================    
+   \nProducto:${venta.nombre}
+==================================
+  \nCantidad:${venta.cantidad}
+=================================
+ \nFecha:    ${formatDate(new Date(venta.fecha))}  
+================================== 
+\nTotal:${venta.totalBs.toFixed(2)}
+ ===================================
+ ============Contenido=============
+  
+     `;
+  });
+
+  resumenContenido.textContent = textoResumen;
+}
+
+enviarWhatsappResumenBtn.addEventListener('click', () => {
+  if (ventas.length === 0) {
+    alert('No hay ventas para enviar');
+    return;
+  }
+  let textoEnviar = 'Resumen de ventas:\n';
+  ventas.forEach((venta, i) => {
+    textoEnviar += ` \nCliente:${venta.cliente}
+=========================
+   \nProducto:${venta.nombre}
+=========================    
+ \nCantidad:${venta.cantidad} 
+=========================    
+ \nFecha:    ${formatDate(new Date(venta.fecha))}
+ ========================   
+  Venta total:${venta.totalBs.toFixed(2)} Bs
+=========================  
+=========contenido=======    
+    `;
+  });
+  openUrlWhatsapp(textoEnviar);
+});
+
+// --- CARGAR DATOS AL INICIAR ---
+
+function cargarDatos() {
+  tasaDolar = loadFromStorage(STORAGE_KEYS.tasa, 0);
+  productos = loadFromStorage(STORAGE_KEYS.productos, []);
+  ventas = loadFromStorage(STORAGE_KEYS.ventas, []);
+  bodegaNombre = loadFromStorage(STORAGE_KEYS.bodega, 'Nombre de la Bodega');
+}  
+    const eliminarResumenBtn = document.getElementById('eliminar-resumen-btn');
+
+eliminarResumenBtn.addEventListener('click', () => {
+  if (ventas.length === 0) {
+    alert('No hay ventas para eliminar');
+    return;
+  }
+  const confirmar = confirm('¿Seguro que desea eliminar todas las ventas y facturas? Esta acción no se puede deshacer.');
+  if (confirmar) {
+    ventas = [];
+    saveToStorage(STORAGE_KEYS.ventas, ventas);
+    renderResumenVentas();
+  }
+});
+
+
+function redirigir() {
+            window.location.href = 'instrucciones.html';
+        }
+    
+</script>
+</body>
+</html>
