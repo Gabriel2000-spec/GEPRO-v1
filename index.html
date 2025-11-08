@@ -411,6 +411,77 @@ input::placeholder, select::placeholder {
         }
     
     
+    
+    
+    
+    
+       /* Estilos básicos para la calculadora */
+    .calculator {
+      max-width: 320px;
+      margin: 20px auto;
+      padding: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      display: none; /* Oculta la calculadora inicialmente */
+    }
+
+    .calculator h2 {
+      text-align: center;
+      margin-bottom: 16px;
+      color: #333;
+    }
+
+    .calculator label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #555;
+    }
+
+    .calculator input[type="number"] {
+      width: 100%;
+      padding: 8px 10px;
+      margin-bottom: 12px;
+      border: 1px solid #bbb;
+      border-radius: 4px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+
+    .calculator button[type="submit"] {
+      width: 100%;
+      padding: 10px;
+      background-color: #007bff; /* azul */
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .calculator button[type="submit"]:hover {
+      background-color: #0056b3;
+    }
+
+ 
+    .result {
+      margin-top: 16px;
+      font-weight: 700;
+      font-size: 1.2rem;
+      text-align: center;
+      color: #222;
+    }
+
+    .error {
+      color: #c00;
+      font-size: 0.9rem;
+      margin-top: -8px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
 </style>
 
 
@@ -471,9 +542,71 @@ input::placeholder, select::placeholder {
     <h3>Tasa BCV del día (Bs/USD):</h3>
     </Center>
     <input type="number" id="tasa-input" step="0.01" min="0" />
+    
+    <Center>
     <button id="guardar-tasa-btn">Guardar Tasa</button>
     <p id="tasa-actual-text"></p>
   </section>
+
+
+  <section id="tasa-section" class="card">
+  <!-- Botón para mostrar/ocultar la calculadora -->
+  
+  <Center>
+  <button id="toggleCalcBtn" aria-expanded="false" aria-controls="calculatorSection">
+    Mostrar calculadora
+  </button>
+</Center>
+
+
+
+  <!-- Sección de la calculadora con id para aria-controls -->
+  <section id="calculatorSection" class="calculator" aria-label="Calculadora de costo por unidad" hidden>
+    <h2>Calculadora Costo por Unidad</h2>
+    <form id="costCalcForm" novalidate>
+      <label for="totalPrice">Precio total de la paca (en Bs):</label>
+      <input
+        type="number"
+        id="totalPrice"
+        name="totalPrice"
+        min="0.01"
+        step="0.01"
+        placeholder="Ej. 120.50"
+        required
+        aria-describedby="priceError"
+      />
+      <div id="priceError" class="error" role="alert" aria-live="assertive"></div>
+
+      <label for="units">Cantidad de unidades en la paca:</label>
+      <input
+        type="number"
+        id="units"
+        name="units"
+        min="1"
+        step="1"
+        placeholder="Ej. 24"
+        required
+        aria-describedby="unitsError"
+      />
+      <div id="unitsError" class="error" role="alert" aria-live="assertive"></div>
+      
+      <Center>
+
+      <button type="submit">Calcular costo por unidad</button>
+      </Center>
+    </form>
+
+    <div id="result" class="result" aria-live="polite"></div>
+  </section>
+
+
+  <p id="tasa-actual-text"></p>
+  </section>
+
+
+
+
+
 
   <section id="agregar-producto-section" class="card">
     <h2>Agregar Producto</h2>
@@ -499,7 +632,11 @@ input::placeholder, select::placeholder {
     <input type="number" id="costo-bs" placeholder="Costo en Bs" min="0" step="0.01" />
     <input type="number" id="cantidad-paca" placeholder="Cantidad por paca (ej: 24 unidad)" min="1" />
     <input type="number" id="ganancia-pct" placeholder="Introducir porcentaje de ganancia" min="0" max="100" step="0.01" />
+    
+    <Center>
     <button id="agregar-producto-btn">Agregar Producto</button>
+    </Center>
+    
   </section>
 
   <section id="filtros-section" class="card">
@@ -1215,6 +1352,68 @@ function redirigir() {
             window.location.href = 'instrucciones.html';
         }
     
+    
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('costCalcForm');
+      const totalPriceInput = document.getElementById('totalPrice');
+      const unitsInput = document.getElementById('units');
+      const resultDiv = document.getElementById('result');
+      const priceError = document.getElementById('priceError');
+      const unitsError = document.getElementById('unitsError');
+      const toggleBtn = document.getElementById('toggleCalcBtn');
+      const calculatorSection = document.getElementById('calculatorSection');
+
+      // Función para validar los inputs
+      function validateInputs() {
+        let valid = true;
+        priceError.textContent = '';
+        unitsError.textContent = '';
+
+        const priceValue = parseFloat(totalPriceInput.value);
+        const unitsValue = parseInt(unitsInput.value, 10);
+
+        if (isNaN(priceValue) || priceValue <= 0) {
+          priceError.textContent = 'Por favor ingrese un precio válido mayor a 0.';
+          valid = false;
+        }
+        if (isNaN(unitsValue) || unitsValue <= 0) {
+          unitsError.textContent = 'Por favor ingrese una cantidad válida de unidades mayor a 0.';
+          valid = false;
+        }
+        return valid;
+      }
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        resultDiv.textContent = '';
+
+        if (!validateInputs()) return;
+
+        const price = parseFloat(totalPriceInput.value);
+        const units = parseInt(unitsInput.value, 10);
+        const costPerUnit = price / units;
+
+        resultDiv.textContent = `El costo por unidad es: Bs ${costPerUnit.toFixed(2)}`;
+      });
+
+      // Toggle para mostrar u ocultar la calculadora
+      toggleBtn.addEventListener('click', () => {
+        const isHidden = calculatorSection.hasAttribute('hidden');
+
+        if (isHidden) {
+          calculatorSection.removeAttribute('hidden');
+          calculatorSection.style.display = 'block';
+          toggleBtn.textContent = 'Ocultar calculadora';
+          toggleBtn.setAttribute('aria-expanded', 'true');
+        } else {
+          calculatorSection.setAttribute('hidden', '');
+          calculatorSection.style.display = 'none';
+          toggleBtn.textContent = 'Mostrar calculadora';
+          toggleBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    });
 </script>
 </body>
 </html>
